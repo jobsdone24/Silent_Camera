@@ -1,7 +1,10 @@
 # Silent Camera App
+![무음카메라 png](https://github.com/jobsdone25/Simple_Silent_Camera/assets/105256600/52695d76-ef68-4ace-b0a6-4c38e42da479)
 
 ## Overview
 This Android app, developed using Kotlin in Android Studio, aims to provide a silent camera experience for public use, such as in libraries or lecture halls. Users can freely capture photos without disturbing the surroundings.
+
+![imagefile](https://github.com/jobsdone25/Simple_Silent_Camera/assets/105256600/eebc17e4-3d11-4be7-bbd8-75ee426c10be)
 
 ## Features
 1. **Silent Camera Functionality**
