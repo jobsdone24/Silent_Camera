@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -13,7 +14,6 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.SeekBar
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
@@ -23,12 +23,16 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.signature.ObjectKey
 import com.example.silentcamera.databinding.ActivityCameraBinding
 import java.text.SimpleDateFormat
 
 
 class CameraActivity : AppCompatActivity() {
-
+    private var ImageUri :String = ""
     private var lensFacing = CameraSelector.DEFAULT_BACK_CAMERA
     private var lensMode: Int = 1
     private var imageCapture: ImageCapture? = null
@@ -73,8 +77,16 @@ class CameraActivity : AppCompatActivity() {
         binding.galleryBtn.setOnClickListener{
             val galleryIntent =
                 Intent(Intent.ACTION_VIEW, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            galleryIntent.type = "image/*"
+                galleryIntent.type = "image/*"
             startActivity(galleryIntent)
+        }
+        binding.captureImg.setOnClickListener {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(ImageUri)
+                )
+            )
         }
     }
 
@@ -167,9 +179,20 @@ class CameraActivity : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults){
-                    val msg = "사진 저장 완료\n경로: ${output.savedUri}"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                    Log.d("photo", msg)
+                    val imageUri = output.savedUri
+
+                    Glide.with(this@CameraActivity)
+                        .load(output.savedUri)
+                        .apply(
+                            RequestOptions()
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .skipMemoryCache(true)
+                                .signature(ObjectKey(System.currentTimeMillis()))
+                        )
+                        .into(binding.captureImg)
+                    binding.captureImg.visibility = View.VISIBLE
+                    binding.galleryBtn.visibility = View.GONE
+                    ImageUri = imageUri.toString()
                 }
             }
         )
